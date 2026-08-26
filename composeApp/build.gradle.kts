@@ -19,6 +19,7 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -60,14 +61,12 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
-
-            implementation(libs.koin.annotations)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.core)
 
             implementation(libs.sqldelight.coroutines)
+            implementation(libs.kotlinx.serialization.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -82,11 +81,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.julianogrady.sample"
+    namespace = "com.jpt.todotogether"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.julianogrady.sample"
+        applicationId = "com.jpt.todotogether"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -100,6 +99,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -114,11 +114,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.julianogrady.sample.MainKt"
+        mainClass = "com.jpt.todotogether.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.julianogrady.sample"
+            packageName = "com.jpt.todotogether"
             packageVersion = "1.0.0"
         }
     }
@@ -127,7 +127,7 @@ compose.desktop {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("com.julianogrady.sample")
+            packageName.set("com.jpt.todotogether")
         }
     }
 }

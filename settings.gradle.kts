@@ -1,4 +1,4 @@
-rootProject.name = "starterproject"
+rootProject.name = "todotogether"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

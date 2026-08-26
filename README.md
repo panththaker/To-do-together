@@ -101,32 +101,32 @@ After a dependency is added to reload the project and sync the dependencies:
 ## Architecture
 
 This project is structured using the MVI (Model-View-Intent) architecture pattern.
-Code is primarily shared in commonMain src [here](composeApp/src/commonMain/kotlin/com/julianogrady/sample).
-Within that folder is the [core](composeApp/src/commonMain/kotlin/com/julianogrady/sample/core) and [di](composeApp/src/commonMain/kotlin/com/julianogrady/sample/di) folders which handle the core logic and dependency injection of the app respectively.
-Furthermore, a folder is made for each screen in the app, such as [home](composeApp/src/commonMain/kotlin/com/julianogrady/sample/home).
+Code is primarily shared in commonMain src [here](composeApp/src/commonMain/kotlin/com/jpt/todotogether).
+Within that folder is the [core](composeApp/src/commonMain/kotlin/com/jpt/todotogether/core) and [di](composeApp/src/commonMain/kotlin/com/jpt/todotogether/di) folders which handle the core logic and dependency injection of the app respectively.
+Furthermore, a folder is made for each screen in the app, such as [home](composeApp/src/commonMain/kotlin/com/jpt/todotogether/home).
 Each screen folder contains 3 subfolders:
-- [data](composeApp/src/commonMain/kotlin/com/julianogrady/sample/home/data) for data models and repositories
-- [domain](composeApp/src/commonMain/kotlin/com/julianogrady/sample/home/domain) for use cases and business logic
-- [presentation](composeApp/src/commonMain/kotlin/com/julianogrady/sample/home/presentation) for UI components and state management
+- [data](composeApp/src/commonMain/kotlin/com/jpt/todotogether/home/data) for data models and repositories
+- [domain](composeApp/src/commonMain/kotlin/com/jpt/todotogether/home/domain) for use cases and business logic
+- [presentation](composeApp/src/commonMain/kotlin/com/jpt/todotogether/home/presentation) for UI components and state management
 
 ### Dependency Injection
-This project uses Koin for dependency injection. The DI module is located in the [di](composeApp/src/commonMain/kotlin/com/julianogrady/sample/di) folder.
+This project uses Koin for dependency injection. The DI module is located in the [di](composeApp/src/commonMain/kotlin/com/jpt/todotogether/di) folder.
 The DI module is where you can define your dependencies and how they are provided throughout the app.
-Specifically, modules are defined in the [Modules.kt](composeApp/src/commonMain/kotlin/com/julianogrady/sample/di/Modules.kt) file.
+Specifically, modules are defined in the [Modules.kt](composeApp/src/commonMain/kotlin/com/jpt/todotogether/di/Modules.kt) file.
 The modules file has two items defined `sharedModule` and `platformModule`. The `sharedModule` is for dependencies that are shared across all platforms, while the `platformModule` is for dependencies that are specific to a platform.
-The `platformModule` is expected to be defined in the platform specific source sets, as done in [Modules.android.kt](composeApp/src/androidMain/kotlin/com/julianogrady/sample/di/Modules.android.kt), [Modules.ios.kt](composeApp/src/iosMain/kotlin/com/julianogrady/sample/di/Modules.ios.kt), and [Modules.jvm.kt](composeApp/src/jvmMain/kotlin/com/julianogrady/sample/di/Modules.jvm.kt).
+The `platformModule` is expected to be defined in the platform specific source sets, as done in [Modules.android.kt](composeApp/src/androidMain/kotlin/com/jpt/todotogether/di/Modules.android.kt), [Modules.ios.kt](composeApp/src/iosMain/kotlin/com/jpt/todotogether/di/Modules.ios.kt), and [Modules.jvm.kt](composeApp/src/jvmMain/kotlin/com/jpt/todotogether/di/Modules.jvm.kt).
 
 ### Database
 This project uses SQLDelight for database management. The database is defined in the [AppDatabase.sq](composeApp/src/commonMain/sqldelight/com/julianogrady/sample/AppDatabase.sq) file.
 This is initialized as done in the DI module files as mentioned in the section above.
-Database queries are called cross-platform using providers as done in the [SettingsRepository.kt](composeApp/src/commonMain/kotlin/com/julianogrady/sample/core/domain/repository/SettingsRepository.kt) interface which is implemented using SQLDelight in [SQLDelightSettingsRepository.kt](composeApp/src/commonMain/kotlin/com/julianogrady/sample/core/data/repository/SQLDelightSettingsRepository.kt).
+Database queries are called cross-platform using providers as done in the [SettingsRepository.kt](composeApp/src/commonMain/kotlin/com/jpt/todotogether/core/domain/repository/SettingsRepository.kt) interface which is implemented using SQLDelight in [SQLDelightSettingsRepository.kt](composeApp/src/commonMain/kotlin/com/jpt/todotogether/core/data/repository/SQLDelightSettingsRepository.kt).
 
 ### Routing
-This project uses standard androidx navigation for routing. Pages are defined using serializable data classes in the entrypoint [App.kt](composeApp/src/commonMain/kotlin/com/julianogrady/sample/core/App.kt) file.
+This project uses standard androidx navigation for routing. Pages are defined using serializable data classes in the entrypoint [App.kt](composeApp/src/commonMain/kotlin/com/jpt/todotogether/core/App.kt) file.
 
 ### Theming
-This project uses a custom theme defined in the [Theme.kt](composeApp/src/commonMain/kotlin/com/julianogrady/sample/core/theming/Theme.kt) file.
-The theme wraps the whole project and is applied in the entrypoint [App.kt](composeApp/src/commonMain/kotlin/com/julianogrady/sample/core/App.kt) file. You can customize the theme by editing the colors, typography, and shapes defined in the [Theme.kt](composeApp/src/commonMain/kotlin/com/julianogrady/sample/core/theming/Theme.kt) file.
+This project uses a custom theme defined in the [Theme.kt](composeApp/src/commonMain/kotlin/com/jpt/todotogether/core/theming/Theme.kt) file.
+The theme wraps the whole project and is applied in the entrypoint [App.kt](composeApp/src/commonMain/kotlin/com/jpt/todotogether/core/App.kt) file. You can customize the theme by editing the colors, typography, and shapes defined in the [Theme.kt](composeApp/src/commonMain/kotlin/com/jpt/todotogether/core/theming/Theme.kt) file.
 
 ### Pages
 
@@ -144,7 +144,7 @@ featureName/
 To add a new page (e.g., `ProfilePage`), follow these steps:
 
 1.  **Create the Directory Structure**
-    Create a new package under `com.julianogrady.sample` (e.g., `profile`). Inside, create `presentation/profilePage`.
+    Create a new package under `com.jpt.todotogether` (e.g., `profile`). Inside, create `presentation/profilePage`.
 
 2.  **Define the UI State**
     Create a `ProfilePageState.kt` data class to hold the screen's state.

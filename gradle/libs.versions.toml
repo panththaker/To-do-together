@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.2"
+agp = "8.13.2"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -14,10 +14,10 @@ composeMultiplatform = "1.10.0"
 junit = "4.13.2"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
+kotlinx-serialization = "1.9.0"
 material3 = "1.10.0-alpha05"
 koin = "4.1.1"
-koin-ksp = "2.1.0"
-sqlDelight = "2.1.0"
+sqlDelight = "2.3.2"
 navigationCompose = "2.9.0"
 
 [libraries]
@@ -29,10 +29,8 @@ sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", 
 jetbrains-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref= "navigationCompose"}
 
 koin-android = {module = "io.insert-koin:koin-android", version.ref = "koin"}
-koin-annotations = {module = "io.insert-koin:koin-annotations", version.ref = "koin-ksp"}
 koin-compose-viewmodel = {module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin"}
-koin-compiler = {module = "io.insert-koin:koin-ksp-compiler", version = "koin-ksp"}
-koin-compose = {module = "io.insert-koin:koin-compose", version = "koin"}
+koin-compose = {module = "io.insert-koin:koin-compose", version.ref = "koin"}
 koin-core = {module = "io.insert-koin:koin-core", version.ref = "koin"}
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -53,11 +51,12 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMul
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 
 
 [plugins]
-sqldelight = { id = "app.cash.sqldelight", version = "2.3.2" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
