@@ -4,10 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -151,6 +156,50 @@ private fun HomePageScreen(
                     onPlusClick = { onAction(HomePageAction.OnIncrementCounter(1)) },
                     onMinusClick = { onAction(HomePageAction.OnIncrementCounter(-1)) },
                 )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedTextField(
+                        value = state.newTodoTitle,
+                        onValueChange = { onAction(HomePageAction.OnNewTodoTitleChanged(it)) },
+                        label = { Text("New todo") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = { onAction(HomePageAction.OnAddTodo) }) {
+                        Text("Add")
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .weight(1f),
+                ) {
+                    items(state.todos, key = { it.id }) { todo ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = todo.completed,
+                                onCheckedChange = { onAction(HomePageAction.OnToggleTodo(todo)) },
+                            )
+                            Text(
+                                text = todo.title,
+                                modifier = Modifier.weight(1f),
+                            )
+                            IconButton(onClick = { onAction(HomePageAction.OnDeleteTodo(todo.id)) }) {
+                                Icon(Icons.Filled.Delete, contentDescription = "Delete todo")
+                            }
+                        }
+                    }
+                }
             }
 
          }

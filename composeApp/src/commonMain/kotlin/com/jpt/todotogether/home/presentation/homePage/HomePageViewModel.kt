@@ -2,7 +2,9 @@ package com.jpt.todotogether.home.presentation.homePage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jpt.todotogether.core.domain.model.Todo
 import com.jpt.todotogether.core.domain.repository.SettingsRepository
+import com.jpt.todotogether.core.domain.repository.TodoRepository
 import com.jpt.todotogether.logger.AppLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +15,7 @@ import kotlinx.coroutines.launch
 // and should be the only place that updates the state.
 class HomePageViewModel(
     private val settingsRepository: SettingsRepository,
+    private val todoRepository: TodoRepository,
 ): ViewModel() {
     // _state is the mutable version of our state and is only accessible in this file
     private val _state = MutableStateFlow(HomePageState())
@@ -25,6 +28,7 @@ class HomePageViewModel(
     // (note, `init` is called directly after the constructor)
     init {
         load()
+        loadTodos()
     }
 
     // onAction is the only handler passed from the viewModel to the composable,
@@ -50,6 +54,12 @@ class HomePageViewModel(
 
                 updateSettingsCounter(0L)
             }
+            is HomePageAction.OnNewTodoTitleChanged -> {
+                _state.update { it.copy(newTodoTitle = action.title) }
+            }
+            HomePageAction.OnAddTodo -> addTodo()
+            is HomePageAction.OnToggleTodo -> toggleTodo(action.todo)
+            is HomePageAction.OnDeleteTodo -> deleteTodo(action.id)
         }
     }
 
@@ -68,6 +78,46 @@ class HomePageViewModel(
                 )
             }
         }
+    }
+
+    // simple test UI for the Todo API - loads the list, and always reloads it
+    // from the server after a mutation rather than patching state locally.
+    private fun loadTodos() = viewModelScope.launch {
+        runCatching { todoRepository.getTodos() }
+            .onSuccess { todos -> _state.update { it.copy(todos = todos) } }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error loading todos", throwable = it)
+            }
+    }
+
+    private fun addTodo() {
+        val title = state.value.newTodoTitle.trim()
+        if (title.isEmpty()) return
+
+        viewModelScope.launch {
+            _state.update { it.copy(newTodoTitle = "") }
+            runCatching { todoRepository.createTodo(title) }
+                .onSuccess { loadTodos() }
+                .onFailure {
+                    AppLogger.error(tag = "HomePageViewModel", message = "Error creating todo", throwable = it)
+                }
+        }
+    }
+
+    private fun toggleTodo(todo: Todo) = viewModelScope.launch {
+        runCatching { todoRepository.updateTodo(todo.copy(completed = !todo.completed)) }
+            .onSuccess { loadTodos() }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error updating todo", throwable = it)
+            }
+    }
+
+    private fun deleteTodo(id: Int) = viewModelScope.launch {
+        runCatching { todoRepository.deleteTodo(id) }
+            .onSuccess { loadTodos() }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error deleting todo", throwable = it)
+            }
     }
 
     // the load function is used to asynchronously load from repositories (ie SQLDelight)

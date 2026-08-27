@@ -42,6 +42,7 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.sqldelight.nativeDriver)
+            implementation(libs.ktor.client.darwin)
         }
 
         androidMain.dependencies {
@@ -49,6 +50,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.sqldelight.androidDriver)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -67,6 +69,11 @@ kotlin {
 
             implementation(libs.sqldelight.coroutines)
             implementation(libs.kotlinx.serialization.json)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.contentNegotiation)
+            implementation(libs.ktor.serialization.kotlinxJson)
+            implementation(libs.ktor.client.logging)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -76,6 +83,7 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
 
             implementation(libs.sqldelight.jvmDriver)
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }
@@ -95,6 +103,9 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    buildFeatures {
+        buildConfig = true
     }
     buildTypes {
         getByName("release") {

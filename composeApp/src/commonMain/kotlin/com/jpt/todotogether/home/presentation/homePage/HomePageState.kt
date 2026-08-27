@@ -1,5 +1,6 @@
 package com.jpt.todotogether.home.presentation.homePage
 
+import com.jpt.todotogether.core.domain.model.Todo
 import kotlin.time.ExperimentalTime
 
 // the state that is provided to the screen composable,
@@ -8,4 +9,6 @@ import kotlin.time.ExperimentalTime
 data class HomePageState(
     val isLoading: Boolean = false,
     val count: Long = 0,
+    val todos: List<Todo> = emptyList(),
+    val newTodoTitle: String = "",
 )

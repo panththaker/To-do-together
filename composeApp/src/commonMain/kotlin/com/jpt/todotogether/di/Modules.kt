@@ -4,9 +4,21 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import com.jpt.todotogether.AppDatabase
 import com.jpt.todotogether.Settings
+import com.jpt.todotogether.core.data.repository.KtorTodoRepository
 import com.jpt.todotogether.core.data.repository.SQLDelightSettingsRepository
 import com.jpt.todotogether.core.domain.repository.SettingsRepository
+import com.jpt.todotogether.core.domain.repository.TodoRepository
 import com.jpt.todotogether.home.presentation.homePage.HomePageViewModel
+import com.jpt.todotogether.logger.AppLogger
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -42,8 +54,42 @@ val sharedModule = module {
         return@single db
     }
 
+    // the shared, fully configured Ktor client. Each platform's `platformModule`
+    // (see Modules.android.kt / Modules.ios.kt / Modules.jvm.kt) supplies the
+    // `HttpClientEngine` (OkHttp on Android/JVM, Darwin on iOS) — the same
+    // expect/actual split already used above for the SqlDriver.
+    single<HttpClient> {
+        val engine = get<HttpClientEngine>()
+
+        HttpClient(engine) {
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                    }
+                )
+            }
+
+            install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        AppLogger.debug(tag = "Ktor", message = message)
+                    }
+                }
+                level = LogLevel.INFO
+            }
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = 15_000
+                connectTimeoutMillis = 15_000
+            }
+        }
+    }
+
     // bind repositories
     singleOf(::SQLDelightSettingsRepository) bind SettingsRepository::class
+    singleOf(::KtorTodoRepository) bind TodoRepository::class
 
     // define view models
     viewModelOf(::HomePageViewModel)

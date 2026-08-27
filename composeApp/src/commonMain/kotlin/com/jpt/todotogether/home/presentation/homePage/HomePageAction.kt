@@ -1,5 +1,7 @@
 package com.jpt.todotogether.home.presentation.homePage
 
+import com.jpt.todotogether.core.domain.model.Todo
+
 // sealed interface HomePageAction is a sealed interface that defines the possible
 // actions that can be taken on the HomePage.
 //
@@ -8,4 +10,9 @@ package com.jpt.todotogether.home.presentation.homePage
 sealed interface HomePageAction {
     data class OnIncrementCounter(val amount: Int) : HomePageAction
     object OnResetCounter : HomePageAction
+
+    data class OnNewTodoTitleChanged(val title: String) : HomePageAction
+    object OnAddTodo : HomePageAction
+    data class OnToggleTodo(val todo: Todo) : HomePageAction
+    data class OnDeleteTodo(val id: Int) : HomePageAction
 }
