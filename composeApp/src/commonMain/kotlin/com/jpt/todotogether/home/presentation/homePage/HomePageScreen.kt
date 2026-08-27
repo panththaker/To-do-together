@@ -78,7 +78,7 @@ private fun HomePageScreen(
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("Made Changes")
+                        Text("Todo Together")
                     },
                     actions = {
                         IconButton(onClick = {
