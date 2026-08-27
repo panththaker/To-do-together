@@ -124,7 +124,7 @@ private fun HomePageScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Button(onClick = { /* TODO */ }) {
-                            Text("Page 1")
+                            Text("Page 100")
                         }
                         Button(onClick = { /* TODO */ }) {
                             Text("Page 2")
