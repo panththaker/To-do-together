@@ -15,4 +15,10 @@ sealed interface HomePageAction {
     object OnAddTodo : HomePageAction
     data class OnToggleTodo(val todo: Todo) : HomePageAction
     data class OnDeleteTodo(val id: Int) : HomePageAction
+
+    // idToken/message come from KMPAuth's rememberGoogleSignInState result,
+    // handled in the composable since it's a Compose-only API.
+    data class OnGoogleSignInSucceeded(val idToken: String) : HomePageAction
+    data class OnGoogleSignInFailed(val message: String) : HomePageAction
+    object OnSignOutClicked : HomePageAction
 }

@@ -71,9 +71,13 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
 
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.auth)
             implementation(libs.ktor.client.contentNegotiation)
             implementation(libs.ktor.serialization.kotlinxJson)
             implementation(libs.ktor.client.logging)
+
+            implementation(libs.kmpauth.google)
+            implementation(libs.kmpauth.uihelper)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -131,6 +135,11 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.jpt.todotogether"
             packageVersion = "1.0.0"
+
+            // KMPAuth's desktop Google sign-in loopback server runs on the
+            // JDK's built-in com.sun.net.httpserver, which jlink strips
+            // unless explicitly kept.
+            modules("jdk.httpserver")
         }
     }
 }
