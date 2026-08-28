@@ -14,12 +14,20 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 // mirrors the backend's createTodoRequest (api/todos.go) - kept private since
 // it's just wire shape, not a domain type.
+@OptIn(ExperimentalTime::class)
 @Serializable
-private data class CreateTodoRequest(val title: String, val dueDate: Long? = null)
+private data class CreateTodoRequest(
+    val title: String,
+    val dueDate: Instant? = null,
+    val label: String? = null,
+)
 
+@OptIn(ExperimentalTime::class)
 class KtorTodoRepository(
     private val client: HttpClient,
 ) : TodoRepository {
@@ -27,10 +35,10 @@ class KtorTodoRepository(
     override suspend fun getTodos(): List<Todo> =
         client.get("${TodoApiConfig.baseUrl}/todos").body()
 
-    override suspend fun createTodo(title: String): Todo =
+    override suspend fun createTodo(title: String, dueDate: Instant?, label: String?): Todo =
         client.post("${TodoApiConfig.baseUrl}/todos") {
             contentType(ContentType.Application.Json)
-            setBody(CreateTodoRequest(title = title))
+            setBody(CreateTodoRequest(title = title, dueDate = dueDate, label = label))
         }.body()
 
     override suspend fun updateTodo(todo: Todo): Boolean =
