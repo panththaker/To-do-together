@@ -36,7 +36,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 // minimal date-only display for the test UI - e.g. "2026-08-28"
 private fun formatDueDate(instant: Instant): String = instant.toString().substringBefore("T")
