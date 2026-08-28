@@ -4,6 +4,7 @@ import com.jpt.todotogether.core.domain.model.AuthSession
 import com.jpt.todotogether.core.domain.model.AuthUser
 import com.jpt.todotogether.core.domain.model.Todo
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 // the state that is provided to the screen composable,
 // should only contain data that is relevant to the ui, and should be immutable.
@@ -13,6 +14,8 @@ data class HomePageState(
     val count: Long = 0,
     val todos: List<Todo> = emptyList(),
     val newTodoTitle: String = "",
+    val newTodoDueDate: Instant? = null,
+    val newTodoLabel: String = "",
     val authUser: AuthUser? = null,
     val isSigningIn: Boolean = false,
     val authError: String? = null,

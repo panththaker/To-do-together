@@ -103,6 +103,7 @@ val sharedModule = module {
             install(HttpTimeout) {
                 requestTimeoutMillis = 15_000
                 connectTimeoutMillis = 15_000
+                socketTimeoutMillis = 15_000
             }
 
             // attaches the stored access token to outgoing requests, and

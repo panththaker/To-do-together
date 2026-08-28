@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Debug-build only (src/debug, not androidMain): allows plain HTTP to the
-    local dev backend IP configured as TodoApiConfig.DEBUG_BASE_URL. Release
-    builds don't merge this file, so production traffic stays HTTPS-only.
+    Debug-build only (src/debug, not androidMain): allows plain HTTP to
+    whatever local dev backend is configured via the "debug.baseUrl" key in
+    local.properties (see TodoApiConfig.DEBUG_BASE_URL and the README
+    "Configuration" section). Cleartext is allowed for all domains here
+    because that address is per-developer and changes machine to machine.
+    Release builds don't merge this file, so production traffic stays
+    HTTPS-only regardless.
 -->
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">192.168.0.182</domain>
-    </domain-config>
+    <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.jpt.todotogether.home.presentation.homePage
 
 import androidx.lifecycle.ViewModel
@@ -59,6 +61,12 @@ class HomePageViewModel(
             }
             is HomePageAction.OnNewTodoTitleChanged -> {
                 _state.update { it.copy(newTodoTitle = action.title) }
+            }
+            is HomePageAction.OnNewTodoDueDateChanged -> {
+                _state.update { it.copy(newTodoDueDate = action.dueDate) }
+            }
+            is HomePageAction.OnNewTodoLabelChanged -> {
+                _state.update { it.copy(newTodoLabel = action.label) }
             }
             HomePageAction.OnAddTodo -> addTodo()
             is HomePageAction.OnToggleTodo -> toggleTodo(action.todo)
@@ -135,9 +143,12 @@ class HomePageViewModel(
         val title = state.value.newTodoTitle.trim()
         if (title.isEmpty()) return
 
+        val dueDate = state.value.newTodoDueDate
+        val label = state.value.newTodoLabel.trim().ifBlank { null }
+
         viewModelScope.launch {
-            _state.update { it.copy(newTodoTitle = "") }
-            runCatching { todoRepository.createTodo(title) }
+            _state.update { it.copy(newTodoTitle = "", newTodoDueDate = null, newTodoLabel = "") }
+            runCatching { todoRepository.createTodo(title, dueDate, label) }
                 .onSuccess { loadTodos() }
                 .onFailure {
                     AppLogger.error(tag = "HomePageViewModel", message = "Error creating todo", throwable = it)

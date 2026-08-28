@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.jpt.todotogether.home.presentation.homePage
 
 import androidx.compose.foundation.background
@@ -29,11 +31,15 @@ import com.jpt.todotogether.core.theming.Theme
 import com.jpt.todotogether.home.presentation.components.Counter
 import com.mmk.kmpauth.google.rememberGoogleSignInState
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
+import kotlin.time.Instant
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+
+// minimal date-only display for the test UI - e.g. "2026-08-28"
+private fun formatDueDate(instant: Instant): String = instant.toString().substringBefore("T")
 
 // public page wrapper that is used for routing
 // is separated like this to avoid passing view model for previews and to keep the screen composable focused on ui
@@ -236,6 +242,48 @@ private fun HomePageScreen(
                     }
                 }
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedTextField(
+                        value = state.newTodoLabel,
+                        onValueChange = { onAction(HomePageAction.OnNewTodoLabelChanged(it)) },
+                        label = { Text("Label") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    var showDatePicker by remember { mutableStateOf(false) }
+                    OutlinedButton(onClick = { showDatePicker = true }) {
+                        Text(state.newTodoDueDate?.let { formatDueDate(it) } ?: "Due date")
+                    }
+                    if (showDatePicker) {
+                        val datePickerState = rememberDatePickerState(
+                            initialSelectedDateMillis = state.newTodoDueDate?.toEpochMilliseconds(),
+                        )
+                        DatePickerDialog(
+                            onDismissRequest = { showDatePicker = false },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    datePickerState.selectedDateMillis?.let { millis ->
+                                        onAction(HomePageAction.OnNewTodoDueDateChanged(Instant.fromEpochMilliseconds(millis)))
+                                    }
+                                    showDatePicker = false
+                                }) { Text("OK") }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+                            },
+                        ) {
+                            DatePicker(state = datePickerState)
+                        }
+                    }
+                }
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
@@ -250,10 +298,20 @@ private fun HomePageScreen(
                                 checked = todo.completed,
                                 onCheckedChange = { onAction(HomePageAction.OnToggleTodo(todo)) },
                             )
-                            Text(
-                                text = todo.title,
-                                modifier = Modifier.weight(1f),
-                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = todo.title)
+                                val subtitle = listOfNotNull(
+                                    todo.label,
+                                    todo.dueDate?.let { "due ${formatDueDate(it)}" },
+                                ).joinToString(" · ")
+                                if (subtitle.isNotEmpty()) {
+                                    Text(
+                                        text = subtitle,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
                             IconButton(onClick = { onAction(HomePageAction.OnDeleteTodo(todo.id)) }) {
                                 Icon(Icons.Filled.Delete, contentDescription = "Delete todo")
                             }
