@@ -1,9 +1,11 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.buildkonfig)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
@@ -140,5 +142,27 @@ sqldelight {
         create("AppDatabase") {
             packageName.set("com.jpt.todotogether")
         }
+    }
+}
+
+// Per-developer debug backend URL, read from the gitignored local.properties
+// so nobody has to hardcode (and accidentally commit) their machine's LAN IP.
+// See README.md "Configuration" for setup instructions.
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+buildkonfig {
+    packageName = "com.jpt.todotogether"
+
+    defaultConfigs {
+        buildConfigField(
+            type = com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            name = "DEBUG_BASE_URL",
+            value = localProperties.getProperty("debug.baseUrl") ?: "http://localhost:8080"
+        )
     }
 }
