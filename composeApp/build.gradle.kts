@@ -1,9 +1,11 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.buildkonfig)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
@@ -42,6 +44,7 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.sqldelight.nativeDriver)
+            implementation(libs.ktor.client.darwin)
         }
 
         androidMain.dependencies {
@@ -49,6 +52,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.sqldelight.androidDriver)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -67,6 +71,15 @@ kotlin {
 
             implementation(libs.sqldelight.coroutines)
             implementation(libs.kotlinx.serialization.json)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.auth)
+            implementation(libs.ktor.client.contentNegotiation)
+            implementation(libs.ktor.serialization.kotlinxJson)
+            implementation(libs.ktor.client.logging)
+
+            implementation(libs.kmpauth.google)
+            implementation(libs.kmpauth.uihelper)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -76,6 +89,7 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
 
             implementation(libs.sqldelight.jvmDriver)
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }
@@ -95,6 +109,9 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    buildFeatures {
+        buildConfig = true
     }
     buildTypes {
         getByName("release") {
@@ -120,6 +137,11 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.jpt.todotogether"
             packageVersion = "1.0.0"
+
+            // KMPAuth's desktop Google sign-in loopback server runs on the
+            // JDK's built-in com.sun.net.httpserver, which jlink strips
+            // unless explicitly kept.
+            modules("jdk.httpserver")
         }
     }
 }
@@ -129,5 +151,27 @@ sqldelight {
         create("AppDatabase") {
             packageName.set("com.jpt.todotogether")
         }
+    }
+}
+
+// Per-developer debug backend URL, read from the gitignored local.properties
+// so nobody has to hardcode (and accidentally commit) their machine's LAN IP.
+// See README.md "Configuration" for setup instructions.
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+buildkonfig {
+    packageName = "com.jpt.todotogether"
+
+    defaultConfigs {
+        buildConfigField(
+            type = com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            name = "DEBUG_BASE_URL",
+            value = localProperties.getProperty("debug.baseUrl") ?: "http://localhost:8080"
+        )
     }
 }

@@ -1,8 +1,13 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.jpt.todotogether.home.presentation.homePage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jpt.todotogether.core.domain.model.Todo
+import com.jpt.todotogether.core.domain.repository.AuthRepository
 import com.jpt.todotogether.core.domain.repository.SettingsRepository
+import com.jpt.todotogether.core.domain.repository.TodoRepository
 import com.jpt.todotogether.logger.AppLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +18,8 @@ import kotlinx.coroutines.launch
 // and should be the only place that updates the state.
 class HomePageViewModel(
     private val settingsRepository: SettingsRepository,
+    private val todoRepository: TodoRepository,
+    private val authRepository: AuthRepository,
 ): ViewModel() {
     // _state is the mutable version of our state and is only accessible in this file
     private val _state = MutableStateFlow(HomePageState())
@@ -25,6 +32,8 @@ class HomePageViewModel(
     // (note, `init` is called directly after the constructor)
     init {
         load()
+        loadTodos()
+        loadSession()
     }
 
     // onAction is the only handler passed from the viewModel to the composable,
@@ -50,7 +59,57 @@ class HomePageViewModel(
 
                 updateSettingsCounter(0L)
             }
+            is HomePageAction.OnNewTodoTitleChanged -> {
+                _state.update { it.copy(newTodoTitle = action.title) }
+            }
+            is HomePageAction.OnNewTodoDueDateChanged -> {
+                _state.update { it.copy(newTodoDueDate = action.dueDate) }
+            }
+            is HomePageAction.OnNewTodoLabelChanged -> {
+                _state.update { it.copy(newTodoLabel = action.label) }
+            }
+            HomePageAction.OnAddTodo -> addTodo()
+            is HomePageAction.OnToggleTodo -> toggleTodo(action.todo)
+            is HomePageAction.OnDeleteTodo -> deleteTodo(action.id)
+            is HomePageAction.OnGoogleSignInSucceeded -> completeGoogleSignIn(action.idToken)
+            is HomePageAction.OnGoogleSignInFailed -> _state.update { it.copy(isSigningIn = false, authError = action.message) }
+            HomePageAction.OnSignOutClicked -> signOut()
         }
+    }
+
+    // called on every app start (see init). authRepository.getSession() silently
+    // refreshes an expired access token using the stored refresh token, so a
+    // previously signed-in user is reauthenticated here without any user action.
+    private fun loadSession() = viewModelScope.launch {
+        _state.update { it.copy(isSessionLoading = true) }
+        runCatching { authRepository.getSession() }
+            .onSuccess { session ->
+                _state.update { it.copy(authUser = session?.user, authSession = session, isSessionLoading = false) }
+            }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error loading auth session", throwable = it)
+                _state.update { it.copy(isSessionLoading = false) }
+            }
+    }
+
+    private fun completeGoogleSignIn(idToken: String) = viewModelScope.launch {
+        _state.update { it.copy(isSigningIn = true, authError = null) }
+        runCatching { authRepository.signInWithGoogleIdToken(idToken) }
+            .onSuccess { session ->
+                _state.update { current -> current.copy(isSigningIn = false, authUser = session.user, authSession = session) }
+            }
+            .onFailure { throwable ->
+                AppLogger.error(tag = "HomePageViewModel", message = "Error completing Google sign-in", throwable = throwable)
+                _state.update { current -> current.copy(isSigningIn = false, authError = throwable.message ?: "Sign-in failed") }
+            }
+    }
+
+    private fun signOut() = viewModelScope.launch {
+        runCatching { authRepository.signOut() }
+            .onSuccess { _state.update { it.copy(authUser = null, authSession = null) } }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error signing out", throwable = it)
+            }
     }
 
     // helpers
@@ -68,6 +127,49 @@ class HomePageViewModel(
                 )
             }
         }
+    }
+
+    // simple test UI for the Todo API - loads the list, and always reloads it
+    // from the server after a mutation rather than patching state locally.
+    private fun loadTodos() = viewModelScope.launch {
+        runCatching { todoRepository.getTodos() }
+            .onSuccess { todos -> _state.update { it.copy(todos = todos) } }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error loading todos", throwable = it)
+            }
+    }
+
+    private fun addTodo() {
+        val title = state.value.newTodoTitle.trim()
+        if (title.isEmpty()) return
+
+        val dueDate = state.value.newTodoDueDate
+        val label = state.value.newTodoLabel.trim().ifBlank { null }
+
+        viewModelScope.launch {
+            _state.update { it.copy(newTodoTitle = "", newTodoDueDate = null, newTodoLabel = "") }
+            runCatching { todoRepository.createTodo(title, dueDate, label) }
+                .onSuccess { loadTodos() }
+                .onFailure {
+                    AppLogger.error(tag = "HomePageViewModel", message = "Error creating todo", throwable = it)
+                }
+        }
+    }
+
+    private fun toggleTodo(todo: Todo) = viewModelScope.launch {
+        runCatching { todoRepository.updateTodo(todo.copy(completed = !todo.completed)) }
+            .onSuccess { loadTodos() }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error updating todo", throwable = it)
+            }
+    }
+
+    private fun deleteTodo(id: Int) = viewModelScope.launch {
+        runCatching { todoRepository.deleteTodo(id) }
+            .onSuccess { loadTodos() }
+            .onFailure {
+                AppLogger.error(tag = "HomePageViewModel", message = "Error deleting todo", throwable = it)
+            }
     }
 
     // the load function is used to asynchronously load from repositories (ie SQLDelight)

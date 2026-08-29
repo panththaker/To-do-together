@@ -1,0 +1,13 @@
+# Copy this file to "local.properties" (already gitignored) and fill in
+# your own machine's values. local.properties is per-developer and must
+# never be committed.
+
+# Path to your Android SDK. Usually written automatically by Android
+# Studio/IntelliJ the first time you open the project.
+#sdk.dir=/path/to/Android/Sdk
+
+# Base URL debug builds (Android/iOS/Desktop) use to reach your local
+# backend. Defaults to http://localhost:8080 if omitted. Set this to your
+# machine's LAN IP if you're testing on a physical device or simulator that
+# can't resolve "localhost" back to your dev machine.
+debug.baseUrl=http://localhost:8080

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Debug-build only manifest fragment, merged into the debug variant's
+    manifest on top of androidMain/AndroidManifest.xml. Points the app at
+    the cleartext exception in res/xml/network_security_config.xml so the
+    local dev backend (see TodoApiConfig.DEBUG_BASE_URL) is reachable over
+    plain HTTP. Not present in release builds.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:networkSecurityConfig="@xml/network_security_config" />
+</manifest>
