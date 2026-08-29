@@ -3,26 +3,37 @@
 package com.jpt.todotogether.home.presentation.homePage
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -36,6 +47,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import com.jpt.todotogether.core.domain.model.Todo
 
 // minimal date-only display for the test UI - e.g. "2026-08-28"
 private fun formatDueDate(instant: Instant): String = instant.toString().substringBefore("T")
@@ -101,43 +115,6 @@ private fun HomePageScreen(
 
     Theme {
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    title = {
-                        Text("Todo Together")
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            showMoreMenu = true
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.MoreHoriz,
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = "More Options",
-                            )
-                        }
-
-                        // Dropdown menu anchored to the More icon. Uses local state `showMoreMenu`.
-                        DropdownMenu(
-                            expanded = showMoreMenu,
-                            onDismissRequest = { showMoreMenu = false },
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Settings") },
-                                onClick = {
-                                    // TODO
-                                    showMoreMenu = false
-                                }
-                            )
-
-                        }
-                    }
-                )
-            },
             bottomBar = {
                 BottomAppBar(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -170,9 +147,17 @@ private fun HomePageScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .safeDrawingPadding()
+                    .padding(start = 20.dp, top = 20.dp),
+                horizontalAlignment = Alignment.Start,
             ){
+                DateHeader(
+                    date = "Tuesday, Aug 25",
+                    totalTasks = 6,
+                    completedCount = 2,
+                    modifier = Modifier
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
@@ -213,13 +198,41 @@ private fun HomePageScreen(
                         .padding(top = 8.dp),
                 )
 
-                Counter(
-                    value = state.count,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(0.9f),
-                    onPlusClick = { onAction(HomePageAction.OnIncrementCounter(1)) },
-                    onMinusClick = { onAction(HomePageAction.OnIncrementCounter(-1)) },
+                TaskCard(
+                    todo = Todo(
+                        id = 1,
+                        title = "Finish Q3 deck",
+                        completed = false,
+                        createdAt = Clock.System.now(),
+                        dueDate = Clock.System.now(),
+                        completedAt = null,
+                        label = "Work",
+                    ),
+                    onToggle = {},
+                )
+                TaskCard(
+                    todo = Todo(
+                        id = 2,
+                        title = "Morning run",
+                        completed = true,
+                        createdAt = Clock.System.now(),
+                        dueDate = null,
+                        completedAt = Clock.System.now(),
+                        label = "Health",
+                    ),
+                    onToggle = {},
+                )
+                TaskCard(
+                    todo = Todo(
+                        id = 3,
+                        title = "Call mom",
+                        completed = false,
+                        createdAt = Clock.System.now(),
+                        dueDate = null,
+                        completedAt = null,
+                        label = null,
+                    ),
+                    onToggle = {},
                 )
 
                 Row(
@@ -291,6 +304,7 @@ private fun HomePageScreen(
                     items(state.todos, key = { it.id }) { todo ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Checkbox(
@@ -322,6 +336,169 @@ private fun HomePageScreen(
          }
      }
  }
+
+@Composable
+private fun DateHeader(
+    date: String,
+    totalTasks: Int,
+    completedCount: Int,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = date,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "$totalTasks tasks today · $completedCount done",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun TagChip(
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        )
+    }
+}
+
+@Composable
+fun TaskCard(
+    todo: Todo,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 14.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CircularCheckbox(
+                checked = todo.completed,
+                onCheckedChange = { onToggle() },
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text(
+                        text = todo.title,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        textDecoration = if (todo.completed) TextDecoration.LineThrough else TextDecoration.None,
+                    )
+                    todo.dueDate?.let { TagChip(label = formatDueDate(it)) }
+                    todo.label?.let { TagChip(label = it) }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CircularCheckbox(
+    checked: Boolean,
+    onCheckedChange: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val color = if (checked) MaterialTheme.colorScheme.primary else Color.Transparent
+    val borderColor = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+
+    Box(
+        modifier = modifier
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(color)
+            .border(2.dp, borderColor, CircleShape)
+            .clickable() { onCheckedChange() },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (checked) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(14.dp),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+@Preview
+fun TaskCardPreview() {
+    Theme {
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            TaskCard(
+                todo = Todo(
+                    id = 1,
+                    title = "Finish Q3 deck",
+                    completed = false,
+                    createdAt = Clock.System.now(),
+                    dueDate = Clock.System.now(),
+                    completedAt = null,
+                    label = "Work",
+                ),
+                onToggle = {},
+            )
+            TaskCard(
+                todo = Todo(
+                    id = 2,
+                    title = "Morning run",
+                    completed = true,
+                    createdAt = Clock.System.now(),
+                    dueDate = null,
+                    completedAt = Clock.System.now(),
+                    label = "Health",
+                ),
+                onToggle = {},
+            )
+            TaskCard(
+                todo = Todo(
+                    id = 3,
+                    title = "Call mom",
+                    completed = false,
+                    createdAt = Clock.System.now(),
+                    dueDate = null,
+                    completedAt = null,
+                    label = null,
+                ),
+                onToggle = {},
+            )
+        }
+    }
+}
 
 // Debug-only panel showing the raw auth state (session presence, tokens,
 // expiry). Tokens are truncated so they aren't fully readable on screen/in
