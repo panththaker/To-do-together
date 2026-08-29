@@ -45,6 +45,27 @@ in your IDE’s toolbar or run it directly from the terminal:
 To build and run the development version of the iOS app, use the run configuration from the run widget
 in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
 
+## Configuration
+
+Debug builds (Android, iOS, and Desktop all share this) need a backend URL to talk to, and that URL is
+different for every developer's machine. That value lives in `local.properties` at the repo root — the
+same gitignored, per-developer file Gradle already uses for `sdk.dir` — instead of being hardcoded in
+source, so nobody has to edit tracked code (and risk committing their own IP) just to point the app at
+their local backend.
+
+Edit `local.properties` and set:
+```properties
+debug.baseUrl=http://localhost:8080
+```
+Use `http://localhost:8080` when the backend runs on the same machine as the Desktop app or an
+Android emulator that maps `localhost` back to the host. If you're testing on a physical device or an iOS simulator, use your
+machine's LAN IP instead (e.g. `http://192.168.0.182:8080`).
+
+Release builds are unaffected.
+
+`local.properties` is gitignored and must never be committed; `local.properties.example` is the tracked
+template new contributors copy from.
+
 ---
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…

@@ -24,4 +24,27 @@ SELECT * FROM Settings
 WHERE id = 1;
 
 
+-- AuthTokens table singleton pattern to persist the signed-in user's tokens across launches. Only one row will exist with id = 1.
+CREATE TABLE AuthTokens (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    access_token TEXT NOT NULL,
+    refresh_token TEXT NOT NULL,
+    expires_at_epoch_millis INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    user_email TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    user_avatar_url TEXT NOT NULL
+);
+
+saveAuthTokens:
+INSERT OR REPLACE INTO AuthTokens (id, access_token, refresh_token, expires_at_epoch_millis, user_id, user_email, user_name, user_avatar_url)
+VALUES (1, ?, ?, ?, ?, ?, ?, ?);
+
+getAuthTokens:
+SELECT * FROM AuthTokens
+WHERE id = 1;
+
+clearAuthTokens:
+DELETE FROM AuthTokens WHERE id = 1;
+
 -- Additional queries & tables can be defined here as needed.
