@@ -65,6 +65,7 @@ fun HomePageScreenRoot(
 private fun HomePageScreenPreview() {
     HomePageScreen(
         state = HomePageState(
+            count = 6,
             isLoading = false,
         ),
         onAction = {},

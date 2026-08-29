@@ -11,6 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageScreenRoot
+import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageViewModel
 import com.jpt.todotogether.core.domain.repository.SettingsRepository
 import com.jpt.todotogether.home.presentation.homePage.HomePageScreenRoot
 import com.jpt.todotogether.home.presentation.homePage.HomePageViewModel
@@ -21,6 +23,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Serializable
 object Home
 
+@Serializable
+object Welcome
 
 // example of a page with a parameter
 //@Serializable
@@ -53,7 +57,7 @@ fun LoadingApp(
         // example to add a setup page for first time running
 //        initialRoute = if (ran) Home else Setup
 
-        initialRoute = Home
+        initialRoute = Welcome
 
         isLoading = false
     }
@@ -82,6 +86,17 @@ fun LoadingApp(
                 // handlers are bubbled up if they require navigation.
                 navigateToSettingsPage = {
                     // TODO
+                }
+            )
+        }
+
+        composable<Welcome> {
+            val viewModel = koinViewModel<WelcomePageViewModel>()
+
+            WelcomePageScreenRoot(
+                viewModel = viewModel,
+                navigateToHome = {
+                    navController.navigate(Home)
                 }
             )
         }

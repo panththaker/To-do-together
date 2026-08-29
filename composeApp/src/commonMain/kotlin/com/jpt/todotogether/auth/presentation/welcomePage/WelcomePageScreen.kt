@@ -1,4 +1,4 @@
-package com.jpt.todotogether.auth.presentation
+package com.jpt.todotogether.auth.presentation.welcomePage
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -19,25 +20,60 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jpt.todotogether.core.theming.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
-fun WelcomeScreen() {
+private fun WelcomePageScreenPreview(){
+    WelcomePageScreen(
+        state = WelcomePageState(),
+        onAction = {},
+        navigateToHome = {},
+    )
+}
+
+@Composable
+fun WelcomePageScreenRoot(
+    viewModel: WelcomePageViewModel = koinViewModel(),
+    navigateToHome: () -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    WelcomePageScreen(
+        state = state,
+        onAction = { action ->
+            viewModel.onAction(action)
+        },
+        navigateToHome,
+    )
+}
+
+@Composable
+fun WelcomePageScreen(
+    state: WelcomePageState,
+    onAction: (WelcomePageAction) -> Unit,
+    navigateToHome: () -> Unit
+) {
     Theme {
         Scaffold(
             bottomBar = {
             Column(Modifier.padding(15.dp)) {
                 Button(
-                    onClick = {},
+                    onClick = {
+                        onAction(WelcomePageAction.OnGetStartedPressed)
+                        navigateToHome() // TODO: Change later
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(15.dp)
                 ) {
                     Text(text = "Get started", fontSize = 16.sp)
                 }
-                OutlinedButton(onClick = {},
+                OutlinedButton(onClick = {
+                    onAction(WelcomePageAction.OnLoginPressed)
+                },
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(15.dp)
