@@ -20,13 +20,23 @@ class TokenStorage(private val db: AppDatabase) {
             accessToken = row.access_token,
             refreshToken = row.refresh_token,
             expiresAtEpochMillis = row.expires_at_epoch_millis,
-            user = AuthUser(row.user_id, row.user_email, row.user_name, row.user_avatar_url),
+            user = AuthUser(
+                id = row.user_id,
+                email = row.user_email,
+                name = row.user_name,
+                avatarUrl = row.user_avatar_url
+            ),
         )
     }
 
     fun save(response: TokenResponse): AuthSession {
         val expiresAt = Clock.System.now().toEpochMilliseconds() + response.expires_in * 1000
-        val user = AuthUser(response.user.id, response.user.email, response.user.name, response.user.avatarUrl)
+        val user = AuthUser(
+            id = response.user.id,
+            email = response.user.email,
+            name = response.user.name,
+            avatarUrl = response.user.avatar_url
+        )
 
         db.appDatabaseQueries.saveAuthTokens(
             access_token = response.access_token,
@@ -38,7 +48,12 @@ class TokenStorage(private val db: AppDatabase) {
             user_avatar_url = user.avatarUrl,
         )
 
-        return AuthSession(response.access_token, response.refresh_token, expiresAt, user)
+        return AuthSession(
+            accessToken = response.access_token,
+            refreshToken = response.refresh_token,
+            expiresAtEpochMillis = expiresAt,
+            user = user
+        )
     }
 
     fun clear() {
