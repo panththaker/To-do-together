@@ -1,25 +1,36 @@
 package com.jpt.todotogether.auth.presentation
 
-
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,18 +41,29 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageAction
 import com.jpt.todotogether.core.theming.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import todotogether.composeapp.generated.resources.Res
+import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
+import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
+
 
 @Preview
 @Composable
 fun LoginScreen() {
     Theme() {
-        Scaffold {
+        Scaffold() {
             Box(
                 modifier = Modifier
                     .offset(150.dp, (-150).dp)
-                    .alpha(0.2f)
+                    .alpha(0.1f)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
@@ -51,8 +73,8 @@ fun LoginScreen() {
             )
             Box(
                 modifier = Modifier
-                    .offset((-150).dp, (450).dp)
-                    .alpha(0.2f)
+                    .offset((-150).dp, (560).dp)
+                    .alpha(0.1f)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
@@ -65,7 +87,7 @@ fun LoginScreen() {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(vertical = 80.dp)
+                    .padding(vertical = 80.dp, horizontal = 16.dp)
                     .fillMaxWidth()
                     .fillMaxHeight(0.8f)
             ) {
@@ -90,13 +112,91 @@ fun LoginScreen() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                 )
-                TextInputBox()
+                Spacer(Modifier.height(40.dp))
+                var text1 by remember { mutableStateOf(value = "Email") }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+
+                ) {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        value = text1,
+                        onValueChange = {},
+                        shape = RoundedCornerShape(15.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedBorderColor = Color(0xFFE5E7EB),
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        )
+                    )
+                    var text2 by remember { mutableStateOf(value = "Password") }
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        value = text2,
+                        onValueChange = {},
+                        shape = RoundedCornerShape(15.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedBorderColor = Color(0xFFE5E7EB),
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        ),
+                    )
+                    Button(
+                        onClick = {},
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        shape = RoundedCornerShape(15.dp),
+                    )
+                    {
+                        Text(
+                            text = "Log in",
+                            fontSize = 16.sp
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "Don't have an account? Sign up",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp,
+                        )
+                    }
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                        )
+                    {
+                        Divider(
+                            modifier = Modifier
+                                .weight(1f)
+                            ,
+                            color = Color.LightGray
+                        )
+                        Text(
+                            text = "or",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                            )
+                        Divider(
+                            modifier = Modifier
+                                .weight(1f),
+                            color = Color.LightGray
+                        )
+                    }
+                    GoogleSignInButton(
+                        onClick = {},
+                    )
+                    AppleSignInButton(
+                        onClick = {},
+                    )
+                }
             }
         }
     }
-}
-
-@Composable
-fun TextInputBox(){
-
 }

@@ -77,7 +77,8 @@ fun WelcomePageScreen(
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(15.dp)
-                ){
+                )
+                {
                     Text(
                         text = "Log in",
                         color = MaterialTheme.colorScheme.primary,

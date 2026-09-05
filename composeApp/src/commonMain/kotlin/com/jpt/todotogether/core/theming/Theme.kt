@@ -18,6 +18,7 @@ val LightAppColors = lightColorScheme(
     onBackground = Color(0xFF1A1A2E),
     onSurface = Color(0xFF1A1A2E),
     surfaceDim = Color(0x141A1A2E),
+    onSurfaceVariant = Color.Gray,
     // ... other colors
 )
 
