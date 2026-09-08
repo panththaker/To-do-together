@@ -11,6 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.jpt.todotogether.auth.presentation.loginPage.LoginPageScreenRoot
+import com.jpt.todotogether.auth.presentation.loginPage.LoginPageViewModel
 import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageScreenRoot
 import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageViewModel
 import com.jpt.todotogether.core.domain.repository.SettingsRepository
@@ -25,6 +27,10 @@ object Home
 
 @Serializable
 object Welcome
+@Serializable
+object Login {
+
+}
 
 // example of a page with a parameter
 //@Serializable
@@ -100,6 +106,18 @@ fun LoadingApp(
                 }
             )
         }
+
+        composable<Login> {
+            val viewModel = koinViewModel<LoginPageViewModel>()
+
+            LoginPageScreenRoot(
+                viewModel = viewModel,
+                navigateToHome = {
+                    navController.navigate(Home)
+                }
+            )
+        }
+
         // example of a page with a parameter
 //        composable<EnvelopeInfo> { backStackEntry ->
 //
