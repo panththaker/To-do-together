@@ -1,4 +1,4 @@
-package com.jpt.todotogether.auth.presentation
+package com.jpt.todotogether.auth.presentation.loginPage
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -40,18 +40,49 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageAction
 import com.jpt.todotogether.core.theming.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 import todotogether.composeapp.generated.resources.Res
 import todotogether.composeapp.generated.resources.ic_apple_logo
 import todotogether.composeapp.generated.resources.ic_google_logo
 
-
 @Preview
 @Composable
-fun LoginScreen() {
+private fun LoginPageScreenPreview(){
+    LoginPageScreen(
+        state = LoginPageState(),
+        onAction = {},
+        navigateToHome = {},
+    )
+}
+
+@Composable
+fun LoginPageScreenRoot(
+    viewModel: LoginPageViewModel = koinViewModel(),
+    navigateToHome: () -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LoginPageScreen(
+        state = state,
+        onAction = { action ->
+            viewModel.onAction(action)
+        },
+        navigateToHome,
+    )
+}
+
+
+@Composable
+fun LoginPageScreen(
+    state: LoginPageState,
+    onAction: (LoginPageAction) -> Unit,
+    navigateToHome: () -> Unit
+) {
     Theme() {
         Scaffold() {
             Box(
@@ -141,7 +172,10 @@ fun LoginScreen() {
                         ),
                     )
                     Button(
-                        onClick = {},
+                        onClick = {
+                            onAction(LoginPageAction.OnLoginPressed)
+                            navigateToHome() // TODO: Change later
+                        },
                         modifier = Modifier
                             .fillMaxWidth(),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
@@ -185,7 +219,10 @@ fun LoginScreen() {
                         )
                     }
                     Button(
-                        onClick = {},
+                        onClick = {
+                            onAction(LoginPageAction.OnGooglePressed)
+                            navigateToHome() // TODO: Change later
+                        },
                         modifier = Modifier
                             .fillMaxWidth(),
                         border = BorderStroke(1.dp, Color.LightGray),
@@ -218,7 +255,10 @@ fun LoginScreen() {
                         }
                     }
                     Button(
-                        onClick = {},
+                        onClick = {
+                            onAction(LoginPageAction.OnApplePressed)
+                            navigateToHome() // TODO: Change later
+                        },
                         modifier = Modifier
                             .fillMaxWidth(),
                         border = BorderStroke(1.dp, Color.LightGray),
