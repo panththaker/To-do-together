@@ -23,14 +23,10 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,16 +39,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageAction
 import com.jpt.todotogether.core.theming.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import todotogether.composeapp.generated.resources.Res
-import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
-import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
+import todotogether.composeapp.generated.resources.ic_apple_logo
+import todotogether.composeapp.generated.resources.ic_google_logo
 
 
 @Preview
@@ -167,6 +161,7 @@ fun LoginScreen() {
                         )
                     }
                     Row (
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -189,12 +184,73 @@ fun LoginScreen() {
                             color = Color.LightGray
                         )
                     }
-                    GoogleSignInButton(
+                    Button(
                         onClick = {},
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        border = BorderStroke(1.dp, Color.LightGray),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonColors(
+                            contentColor = Color.Black,
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            disabledContainerColor = MaterialTheme.colorScheme.surface,
+                            disabledContentColor = Color.Black
+                            )
                     )
-                    AppleSignInButton(
+                    {
+                        Row (
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                ,
+                        )
+                        {
+                            Image(
+                                painter = painterResource(Res.drawable.ic_google_logo),
+                                contentDescription = "Google icon",
+                                modifier = Modifier
+                                    .size(30.dp)
+                            )
+                            Text(
+                                text = "Sign in with Google",
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                    Button(
                         onClick = {},
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        border = BorderStroke(1.dp, Color.LightGray),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonColors(
+                            contentColor = MaterialTheme.colorScheme.surface,
+                            containerColor = Color.Black,
+                            disabledContainerColor = Color.Black,
+                            disabledContentColor = MaterialTheme.colorScheme.surface
+                        )
                     )
+                    {
+                        Row (
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                            ,
+                        )
+                        {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_apple_logo),
+                                contentDescription = "Google icon",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(30.dp)
+                            )
+                            Text(
+                                text = "Sign in with Apple",
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
                 }
             }
         }
