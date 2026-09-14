@@ -32,13 +32,15 @@ private fun WelcomePageScreenPreview(){
         state = WelcomePageState(),
         onAction = {},
         navigateToHome = {},
+        navigateToLogin = {},
     )
 }
 
 @Composable
 fun WelcomePageScreenRoot(
     viewModel: WelcomePageViewModel = koinViewModel(),
-    navigateToHome: () -> Unit
+    navigateToLogin: () -> Unit,
+    navigateToHome: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -48,6 +50,7 @@ fun WelcomePageScreenRoot(
             viewModel.onAction(action)
         },
         navigateToHome,
+        navigateToLogin,
     )
 }
 
@@ -55,7 +58,8 @@ fun WelcomePageScreenRoot(
 fun WelcomePageScreen(
     state: WelcomePageState,
     onAction: (WelcomePageAction) -> Unit,
-    navigateToHome: () -> Unit
+    navigateToHome: () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     Theme {
         Scaffold(
@@ -73,6 +77,7 @@ fun WelcomePageScreen(
                 }
                 OutlinedButton(onClick = {
                     onAction(WelcomePageAction.OnLoginPressed)
+                    navigateToLogin()
                 },
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),

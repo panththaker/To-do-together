@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageAction
 import com.jpt.todotogether.core.theming.Theme
+import com.jpt.todotogether.home.presentation.homePage.HomePageAction
+import com.mmk.kmpauth.google.rememberGoogleSignInState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -52,7 +54,7 @@ import todotogether.composeapp.generated.resources.ic_google_logo
 
 @Preview
 @Composable
-private fun LoginPageScreenPreview(){
+private fun LoginPageScreenPreview() {
     LoginPageScreen(
         state = LoginPageState(),
         onAction = {},
@@ -83,6 +85,13 @@ fun LoginPageScreen(
     onAction: (LoginPageAction) -> Unit,
     navigateToHome: () -> Unit
 ) {
+    val googleSignIn = rememberGoogleSignInState(
+        isAutoSelectEnabled = false,
+        onResult = { result ->
+            result
+                .onSuccess { user -> onAction(LoginPageAction.OnGoogleSignInSucceeded(user.idToken)) }
+                .onFailure { error -> onAction(LoginPageAction.OnGoogleSignInFailed(error.message ?: "Sign-in failed")) }
+        })
     Theme() {
         Scaffold() {
             Box(
@@ -220,7 +229,7 @@ fun LoginPageScreen(
                     }
                     Button(
                         onClick = {
-                            onAction(LoginPageAction.OnGooglePressed)
+                            googleSignIn.launch()
                             navigateToHome() // TODO: Change later
                         },
                         modifier = Modifier

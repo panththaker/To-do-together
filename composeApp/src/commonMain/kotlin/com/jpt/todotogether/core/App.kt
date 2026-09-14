@@ -103,6 +103,9 @@ fun LoadingApp(
                 viewModel = viewModel,
                 navigateToHome = {
                     navController.navigate(Home)
+                },
+                navigateToLogin = {
+                    navController.navigate(Login)
                 }
             )
         }
