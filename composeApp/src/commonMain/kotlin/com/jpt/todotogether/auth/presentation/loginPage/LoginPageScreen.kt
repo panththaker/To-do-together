@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageAction
 import com.jpt.todotogether.core.theming.Theme
@@ -89,7 +91,7 @@ fun LoginPageScreen(
         isAutoSelectEnabled = false,
         onResult = { result ->
             result
-                .onSuccess { user -> onAction(LoginPageAction.OnGoogleSignInSucceeded(user.idToken)) }
+                .onSuccess { user -> onAction(LoginPageAction.OnGoogleSignInSucceeded(user.idToken))}
                 .onFailure { error -> onAction(LoginPageAction.OnGoogleSignInFailed(error.message ?: "Sign-in failed")) }
         })
     Theme() {
@@ -147,19 +149,19 @@ fun LoginPageScreen(
                     fontSize = 12.sp,
                 )
                 Spacer(Modifier.height(40.dp))
-                var text1 by remember { mutableStateOf(value = "Email") }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-
                 ) {
+                    var text1 by remember { mutableStateOf("") }
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth(),
+                        placeholder = { Text("Email") },
                         value = text1,
-                        onValueChange = {},
+                        onValueChange = {text1 = it},
                         shape = RoundedCornerShape(15.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
@@ -167,18 +169,20 @@ fun LoginPageScreen(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                         )
                     )
-                    var text2 by remember { mutableStateOf(value = "Password") }
+                    var text2 by remember { mutableStateOf("") }
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth(),
                         value = text2,
-                        onValueChange = {},
+                        onValueChange = {text2 = it},
+                        placeholder = { Text("Password") },
                         shape = RoundedCornerShape(15.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
                             unfocusedBorderColor = Color(0xFFE5E7EB),
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                         ),
+                        visualTransformation = PasswordVisualTransformation(),
                     )
                     Button(
                         onClick = {
@@ -230,7 +234,6 @@ fun LoginPageScreen(
                     Button(
                         onClick = {
                             googleSignIn.launch()
-                            navigateToHome() // TODO: Change later
                         },
                         modifier = Modifier
                             .fillMaxWidth(),

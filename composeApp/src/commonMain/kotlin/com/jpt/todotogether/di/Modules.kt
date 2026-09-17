@@ -4,6 +4,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import com.jpt.todotogether.AppDatabase
 import com.jpt.todotogether.Settings
+import com.jpt.todotogether.auth.presentation.loginPage.LoginPageViewModel
 import com.jpt.todotogether.auth.presentation.welcomePage.WelcomePageViewModel
 import com.jpt.todotogether.core.data.auth.TokenStorage
 import com.jpt.todotogether.core.data.remote.TodoApiConfig
@@ -153,6 +154,7 @@ val sharedModule = module {
     // define view models
     viewModelOf(::HomePageViewModel)
     viewModelOf(::WelcomePageViewModel)
+    viewModelOf(::LoginPageViewModel)
     // ... add other view models here
     // viewModelOf(::SetupPageViewModel)
     // viewModelOf(::SettingsPageViewModel)

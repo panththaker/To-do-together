@@ -71,6 +71,7 @@ class LoginPageViewModel(
                         authSession = session
                     )
                 }
+                // TODO: Maybe add nav here
             }
             .onFailure { throwable ->
                 AppLogger.error(
