@@ -3,7 +3,7 @@ package com.jpt.todotogether.core.data.remote
 import com.jpt.todotogether.BuildKonfig
 import com.jpt.todotogether.core.isDebugBuild
 
-// Centralizes the Todo API's base URL so debug builds talk to each
+// Centralizes the To-do API's base URL so debug builds talk to each
 // developer's own local backend and release builds talk to production.
 // DEBUG_BASE_URL comes from the gitignored local.properties (key
 // "debug.baseUrl") via BuildKonfig — see README.md "Configuration".
