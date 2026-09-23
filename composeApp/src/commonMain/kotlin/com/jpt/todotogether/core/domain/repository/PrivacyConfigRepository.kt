@@ -4,5 +4,8 @@ import com.jpt.todotogether.core.domain.model.PrivacySettings
 
 interface PrivacyConfigRepository {
     suspend fun getPrivacySettings(): PrivacySettings
-    suspend fun updatePrivacySettings(settings: PrivacySettings): Boolean
+
+    // replaces the settings wholesale (including the label list) and returns
+    // what the backend saved.
+    suspend fun updatePrivacySettings(settings: PrivacySettings): PrivacySettings
 }

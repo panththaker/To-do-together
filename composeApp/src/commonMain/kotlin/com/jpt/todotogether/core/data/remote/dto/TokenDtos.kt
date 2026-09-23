@@ -21,6 +21,7 @@ data class UserDto(
     val email: String,
     val name: String,
     val avatar_url: String,
+    val username: String = "",
 )
 
 @Serializable
@@ -30,4 +31,10 @@ data class TokenResponse(
     val token_type: String,
     val expires_in: Long,
     val user: UserDto,
+)
+
+// POST /auth/logout - revokes just this refresh token server-side.
+@Serializable
+data class LogoutRequest(
+    val refresh_token: String,
 )

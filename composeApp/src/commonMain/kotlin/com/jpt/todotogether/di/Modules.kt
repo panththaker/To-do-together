@@ -9,9 +9,19 @@ import com.jpt.todotogether.core.data.remote.TodoApiConfig
 import com.jpt.todotogether.core.data.remote.dto.TokenRequest
 import com.jpt.todotogether.core.data.remote.dto.TokenResponse
 import com.jpt.todotogether.core.data.repository.KtorAuthRepository
+import com.jpt.todotogether.core.data.repository.KtorDayPlanRepository
+import com.jpt.todotogether.core.data.repository.KtorFriendTodoRepository
+import com.jpt.todotogether.core.data.repository.KtorFriendsRepository
+import com.jpt.todotogether.core.data.repository.KtorPrivacyConfigRepository
+import com.jpt.todotogether.core.data.repository.KtorProfileRepository
 import com.jpt.todotogether.core.data.repository.KtorTodoRepository
 import com.jpt.todotogether.core.data.repository.SQLDelightSettingsRepository
 import com.jpt.todotogether.core.domain.repository.AuthRepository
+import com.jpt.todotogether.core.domain.repository.DayPlanRepository
+import com.jpt.todotogether.core.domain.repository.FriendTodoRepository
+import com.jpt.todotogether.core.domain.repository.FriendsRepository
+import com.jpt.todotogether.core.domain.repository.PrivacyConfigRepository
+import com.jpt.todotogether.core.domain.repository.ProfileRepository
 import com.jpt.todotogether.core.domain.repository.SettingsRepository
 import com.jpt.todotogether.core.domain.repository.TodoRepository
 import com.jpt.todotogether.home.presentation.homePage.HomePageViewModel
@@ -148,6 +158,11 @@ val sharedModule = module {
     singleOf(::SQLDelightSettingsRepository) bind SettingsRepository::class
     singleOf(::KtorTodoRepository) bind TodoRepository::class
     singleOf(::KtorAuthRepository) bind AuthRepository::class
+    singleOf(::KtorProfileRepository) bind ProfileRepository::class
+    singleOf(::KtorFriendsRepository) bind FriendsRepository::class
+    singleOf(::KtorFriendTodoRepository) bind FriendTodoRepository::class
+    singleOf(::KtorPrivacyConfigRepository) bind PrivacyConfigRepository::class
+    singleOf(::KtorDayPlanRepository) bind DayPlanRepository::class
 
     // define view models
     viewModelOf(::HomePageViewModel)

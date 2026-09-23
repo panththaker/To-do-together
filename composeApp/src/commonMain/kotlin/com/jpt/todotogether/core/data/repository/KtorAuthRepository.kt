@@ -2,6 +2,7 @@ package com.jpt.todotogether.core.data.repository
 
 import com.jpt.todotogether.core.data.auth.TokenStorage
 import com.jpt.todotogether.core.data.remote.TodoApiConfig
+import com.jpt.todotogether.core.data.remote.dto.LogoutRequest
 import com.jpt.todotogether.core.data.remote.dto.TokenRequest
 import com.jpt.todotogether.core.data.remote.dto.TokenResponse
 import com.jpt.todotogether.core.domain.model.AuthSession
@@ -37,7 +38,19 @@ class KtorAuthRepository(
         exchangeToken(TokenRequest(grant_type = "google_id_token", id_token = idToken))
 
     override suspend fun signOut() {
+        // best-effort server-side revoke; signing out locally must still
+        // succeed when offline or if the token is already invalid.
+        tokenStorage.getSession()?.let { session ->
+            runCatching {
+                client.post("${TodoApiConfig.baseUrl}/auth/logout") {
+                    contentType(ContentType.Application.Json)
+                    setBody(LogoutRequest(refresh_token = session.refreshToken))
+                }
+            }
+        }
+
         tokenStorage.clear()
+
         // Clears Credential Manager's remembered account so the next
         // sign-in shows the picker instead of auto-selecting.
         runCatching { GoogleAuthProvider.get().signOut() }
