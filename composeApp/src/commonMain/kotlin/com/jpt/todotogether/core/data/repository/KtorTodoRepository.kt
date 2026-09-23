@@ -1,6 +1,7 @@
 package com.jpt.todotogether.core.data.repository
 
 import com.jpt.todotogether.core.data.remote.TodoApiConfig
+import com.jpt.todotogether.core.data.remote.dto.CreateTodoRequest
 import com.jpt.todotogether.core.domain.model.Todo
 import com.jpt.todotogether.core.domain.repository.TodoRepository
 import io.ktor.client.HttpClient
@@ -13,19 +14,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-import kotlinx.serialization.Serializable
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
-
-// mirrors the backend's createTodoRequest (api/todos.go) - kept private since
-// it's just wire shape, not a domain type.
-@OptIn(ExperimentalTime::class)
-@Serializable
-private data class CreateTodoRequest(
-    val title: String,
-    val dueDate: Instant? = null,
-    val label: String? = null,
-)
 
 @OptIn(ExperimentalTime::class)
 class KtorTodoRepository(
